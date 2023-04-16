@@ -1,0 +1,17 @@
+{
+  "name": "Inflearn Extend",
+  "version": "0.1.0",
+  "description": "Inflearn Utility",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["https://www.inflearn.com/*"],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.inflearn.com/*"],
+      "js": ["dist/index.js"]
+    }
+  ],
+  "manifest_version": 3
+}

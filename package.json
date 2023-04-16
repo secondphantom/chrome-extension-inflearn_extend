@@ -1,0 +1,20 @@
+{
+  "name": "chrome-extension-inflearn_extend",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "watch": "webpack --watch --config webpack.dev.js",
+    "build": "webpack --watch --config webpack.prd.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.0.231",
+    "copy-webpack-plugin": "^11.0.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.79.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
