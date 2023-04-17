@@ -1,16 +1,13 @@
-import { Utils } from "./util/utils";
-
-export interface InflearnExtraConfig {
-  "course-auto_skip": boolean;
-  "course-video_speed": boolean;
-  "home-search_my_course": boolean;
-}
+import { ConfigRepo } from "./infrastructure/db/config.repo";
 
 class PopUpController {
   static instance: PopUpController | undefined;
-  static getInstance = () => {
+
+  constructor(private configRepo: ConfigRepo) {}
+
+  static getInstance = (configRepo: ConfigRepo) => {
     if (this.instance) return this.instance;
-    this.instance = new PopUpController();
+    this.instance = new PopUpController(configRepo);
     return this.instance;
   };
 
@@ -21,7 +18,8 @@ class PopUpController {
   init = async () => {
     if (this.isInit) return;
 
-    const localConfig = await Utils.getStorage("inflearn-extra-config");
+    const localConfig =
+      (await this.configRepo.getConfig()) as any as typeof this.config;
 
     const list = document.querySelectorAll(
       "li input"
@@ -35,7 +33,7 @@ class PopUpController {
         this.updateConfig();
       });
     }
-    Utils.setStorage("inflearn-extra-config", this.config);
+    this.configRepo.setConfig(this.config);
   };
 
   private updateConfig = () => {
@@ -47,7 +45,7 @@ class PopUpController {
       this.config[id] = ele.checked;
       ele.checked = this.config[id];
     }
-    Utils.setStorage("inflearn-extra-config", this.config);
+    this.configRepo.setConfig(this.config);
   };
 }
 
@@ -58,6 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   const activeTab = tabs[0];
 
-  const popUpController = PopUpController.getInstance();
+  const popUpController = PopUpController.getInstance(ConfigRepo.getInstance());
   popUpController.init();
 });

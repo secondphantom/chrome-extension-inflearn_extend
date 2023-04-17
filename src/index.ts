@@ -4,17 +4,16 @@ import { CourseController } from "./controller/course/course.controller";
 import { CourseEntry } from "./controller/course/course.entry";
 import { HomeController } from "./controller/home/home.controller";
 import { HomeEntry } from "./controller/home/home.entry";
-import { InflearnExtraConfig } from "./popup";
-import { Utils } from "./util/utils";
+import { ConfigRepo } from "./infrastructure/db/config.repo";
+import { CourseChromeStorageSyncRepo } from "./infrastructure/db/course.repo";
 
 let isInit = false;
+let oldUrl = "";
 chrome.runtime.onMessage.addListener(async (obj, sender, response) => {
   const url = new URL(obj.url);
 
-  if (isInit) return;
-  const config = await Utils.getStorage<InflearnExtraConfig>(
-    "inflearn-extra-config"
-  );
+  if (isInit && oldUrl === obj.url) return;
+  const config = await ConfigRepo.getInstance().getConfig();
   if (document.querySelector("#searchbar-input")) {
     const entry = HomeEntry.getInstance(
       HomeController.getInstance(HomeService.getInstance())
@@ -29,7 +28,9 @@ chrome.runtime.onMessage.addListener(async (obj, sender, response) => {
     }
   } else if (url.pathname.includes("/course/lecture")) {
     const entry = CourseEntry.getInstance(
-      CourseController.getInstance(CourseService.getInstance())
+      CourseController.getInstance(
+        CourseService.getInstance(CourseChromeStorageSyncRepo.getInstance())
+      )
     );
     if (config === null) {
       await entry.autoSkip(obj.url);
@@ -43,5 +44,6 @@ chrome.runtime.onMessage.addListener(async (obj, sender, response) => {
       await entry.videoSpeed();
     }
   }
+  oldUrl = obj.url;
   isInit = true;
 });

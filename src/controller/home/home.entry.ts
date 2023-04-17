@@ -14,13 +14,17 @@ export class HomeEntry {
     this.instance = new HomeEntry(homeController);
     return this.instance;
   };
+
   searchMyCourse = async () => {
     const id = this.id.searchMyCourse;
     const ele = document.querySelector(`#${id}`);
     if (ele) return;
+    this.createSearchMyCourseEle();
+  };
 
+  createSearchMyCourseEle = () => {
     const searchDiv = document.createElement("div");
-    searchDiv.id = id;
+    searchDiv.id = this.id.searchMyCourse;
     searchDiv.className = "search search_bar navbar-item header_search";
     // searchDiv.style.color = "white";
     searchDiv.innerHTML = `
@@ -43,5 +47,7 @@ export class HomeEntry {
         this.homeController.searchMyCourse({ searchDiv });
       }
     });
+
+    return searchDiv;
   };
 }

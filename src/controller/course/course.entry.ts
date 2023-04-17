@@ -1,4 +1,3 @@
-import { Utils } from "../../util/utils";
 import { CourseController } from "./course.controller";
 
 export class CourseEntry {
@@ -7,10 +6,14 @@ export class CourseEntry {
     autoSkip: false,
   };
 
-  private id = {
+  private _id = {
     autoSkip: "inflearn-extra-course-auto_skip",
     videoSpeed: "inflearn-extra-course-video_speed",
   };
+
+  get id() {
+    return this._id;
+  }
 
   constructor(private courseController: CourseController) {}
 
@@ -21,20 +24,16 @@ export class CourseEntry {
   };
 
   autoSkip = async (url: string) => {
-    const id = this.id.autoSkip;
-    let isEnabled = await Utils.getStorage<boolean>(id);
-    if (isEnabled === null) {
-      Utils.setStorage(id, false);
-      isEnabled = false;
+    const id = this._id.autoSkip;
+    let ele = document.querySelector(`#${id}`) as HTMLButtonElement;
+    if (!ele) {
+      ele = this.createAutoSkpButton(url);
     }
+    this.courseController.initAutoSkip({ button: ele, url });
+  };
 
-    const ele = document.querySelector(`#${id}`) as HTMLButtonElement;
-    if (ele) {
-      this.courseController.initAutoSkip({ button: ele, isEnabled, url });
-      return;
-    }
-    if (this.button.autoSkip) return;
-
+  private createAutoSkpButton = (url: string) => {
+    const id = this._id.autoSkip;
     const button = document.createElement("button");
     button.id = id;
     button.type = "button";
@@ -50,8 +49,6 @@ export class CourseEntry {
     button.style.fontFamily = `retendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-seri`;
     button.style.width = "100px";
 
-    this.courseController.initAutoSkip({ button, isEnabled, url });
-
     button.addEventListener("click", () => {
       this.courseController.autoSkipHandler({ button });
     });
@@ -59,21 +56,24 @@ export class CourseEntry {
     const insertedEle = document.querySelector(".mantine-Group-root")!;
     insertedEle.prepend(button);
     this.button.autoSkip = true;
+
+    return button;
   };
 
   videoSpeed = async () => {
-    const id = this.id.videoSpeed;
-    const ele = document.querySelector(`#${id}`);
-    if (ele) {
-      setTimeout(() => {
-        const videoEle = document.querySelector("video");
-        speedDiv.innerText =
-          videoEle?.playbackRate === undefined
-            ? "1" + "X"
-            : videoEle?.playbackRate + "X";
-      }, 500);
-      return;
+    const id = this._id.videoSpeed;
+    let ele = document.querySelector(`#${id}`) as HTMLDivElement;
+    if (!ele) {
+      ele = this.createVideoSpeedButton();
     }
+    setTimeout(() => {
+      const videoEle = document.querySelector("video");
+      this.courseController.initSpeed({ controller: ele, videoEle });
+    }, 500);
+  };
+
+  private createVideoSpeedButton = () => {
+    const id = this._id.videoSpeed;
     const speedController = document.createElement("div");
     speedController.id = id;
     speedController.setAttribute("data-speed", "1");
@@ -136,7 +136,6 @@ export class CourseEntry {
     speedDownButton.addEventListener("click", () => {
       this.courseController.speedHandler({
         isUp: false,
-
         controller: speedController,
       });
     });
@@ -144,14 +143,10 @@ export class CourseEntry {
     speedController.appendChild(speedDownButton);
     speedController.appendChild(speedDiv);
     speedController.appendChild(speedUpButton);
-    setTimeout(() => {
-      const videoEle = document.querySelector("video");
-      speedDiv.innerText =
-        videoEle?.playbackRate === undefined
-          ? "1" + "X"
-          : videoEle?.playbackRate + "X";
-    }, 500);
+
     const insertedEle = document.querySelector(".mantine-Group-root")!;
     insertedEle.prepend(speedController);
+
+    return speedController;
   };
 }

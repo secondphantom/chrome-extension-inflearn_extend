@@ -1,4 +1,4 @@
-import { CourseService } from "src/application/service/course.service";
+import { CourseService } from "../../application/service/course.service";
 
 export class CourseController {
   static instance: CourseController | undefined;
@@ -11,45 +11,17 @@ export class CourseController {
     return this.instance;
   };
 
-  initAutoSkip = ({
+  initAutoSkip = async ({
     button,
-    isEnabled,
     url,
   }: {
     button: HTMLButtonElement;
-    isEnabled: boolean;
     url: string;
   }) => {
-    const id = button.getAttribute("id")!;
     try {
-      const result = this.courseService.autoSkipHandler({
-        id,
-        isEnabled: isEnabled,
-        url,
-      });
-      this.setAutoSkipStyle({ button, isEnabled: result.isEnabled });
+      await this.courseService.initAutoSkip({ button, url });
     } catch (error) {
       console.warn(error);
-    }
-  };
-
-  private setAutoSkipStyle = ({
-    button,
-    isEnabled,
-  }: {
-    button: HTMLButtonElement;
-    isEnabled: boolean;
-  }) => {
-    if (isEnabled) {
-      button.style.color = "white";
-      button.style.backgroundColor = "rgb(0, 196, 113)";
-      button.innerText = "자동 재생중";
-      button.setAttribute("data-button", "true");
-    } else {
-      button.style.color = "rgb(0, 196, 113)";
-      button.style.backgroundColor = "transparent";
-      button.innerText = "자동 재생";
-      button.setAttribute("data-button", "false");
     }
   };
 
@@ -62,22 +34,28 @@ export class CourseController {
         id,
         isEnabled: !isEnabled,
       });
-      this.setAutoSkipStyle({ button, isEnabled: result.isEnabled });
+      this.courseService.setAutoSkipStyle({
+        button,
+        isEnabled: result.isEnabled,
+      });
     } catch (error) {
       console.warn(error);
     }
   };
 
-  private setSpeedDiv = ({
+  initSpeed = async ({
     controller,
-    playbackRate,
+    videoEle,
   }: {
     controller: HTMLDivElement;
-    playbackRate: number;
+    videoEle: HTMLVideoElement | null;
   }) => {
-    const speedDiv = controller.querySelector("div");
-    if (!speedDiv) return;
-    speedDiv.innerText = playbackRate.toString() + "X";
+    try {
+      if (!videoEle) return;
+      await this.courseService.initSpeed({ controller, videoEle });
+    } catch (error) {
+      console.warn(error);
+    }
   };
 
   speedHandler = async ({
@@ -90,10 +68,10 @@ export class CourseController {
     try {
       const videoEle = document.querySelector("video");
       if (!videoEle) return;
-      const result = this.courseService.speedHandler({ isUp, videoEle });
-      this.setSpeedDiv({
+      this.courseService.speedHandler({
+        isUp,
+        videoEle,
         controller,
-        playbackRate: result.playbackRate ? result.playbackRate : 1,
       });
     } catch (error) {
       console.warn(error);

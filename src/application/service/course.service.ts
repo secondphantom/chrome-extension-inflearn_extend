@@ -1,4 +1,4 @@
-import { Utils } from "../../util/utils";
+import { CourseRepo } from "../interface/course.repo";
 
 export class CourseService {
   static instance: CourseService | undefined;
@@ -12,13 +12,13 @@ export class CourseService {
     autoSkipHandler: "",
   };
 
-  constructor() {
+  constructor(private courseRepo: CourseRepo) {
     this.playerNodeObserver = this.initPlayerNodeObserver();
   }
 
-  static getInstance = () => {
+  static getInstance = (courseRepo: CourseRepo) => {
     if (this.instance) return this.instance;
-    this.instance = new CourseService();
+    this.instance = new CourseService(courseRepo);
     return this.instance;
   };
 
@@ -47,15 +47,15 @@ export class CourseService {
     this.playerNodeObserver.observe(targetNode!, observerOptions);
   };
 
-  autoSkipHandler = ({
-    id,
-    isEnabled,
+  initAutoSkip = async ({
+    button,
     url,
   }: {
-    id: string;
-    isEnabled: boolean;
-    url?: string;
+    button: HTMLButtonElement;
+    url: string;
   }) => {
+    const id = button.getAttribute("id")!;
+    const isEnabled = await this.courseRepo.getAutoSkipIsEnabled(id);
     if (this.url.autoSkipHandler !== url) {
       this.url.autoSkipHandler = url!;
       if (this.playerNodeObserver) {
@@ -65,33 +65,87 @@ export class CourseService {
         this.setPlayerNodeObserver();
       }, 500);
     }
+    this.isEnabled.autoSkip = isEnabled;
+    this.setAutoSkipStyle({ button, isEnabled });
+  };
 
-    Utils.setStorage(id, isEnabled);
+  setAutoSkipStyle = ({
+    button,
+    isEnabled,
+  }: {
+    button: HTMLButtonElement;
+    isEnabled: boolean;
+  }) => {
+    if (isEnabled) {
+      button.style.color = "white";
+      button.style.backgroundColor = "rgb(0, 196, 113)";
+      button.innerText = "자동 재생중";
+      button.setAttribute("data-button", "true");
+    } else {
+      button.style.color = "rgb(0, 196, 113)";
+      button.style.backgroundColor = "transparent";
+      button.innerText = "자동 재생";
+      button.setAttribute("data-button", "false");
+    }
+  };
+
+  autoSkipHandler = ({ id, isEnabled }: { id: string; isEnabled: boolean }) => {
+    this.courseRepo.setAutoSkipIsEnabled(id, isEnabled);
 
     this.isEnabled.autoSkip = isEnabled;
     return { isEnabled: this.isEnabled.autoSkip };
   };
 
+  initSpeed = async ({
+    controller,
+    videoEle,
+  }: {
+    controller: HTMLDivElement;
+    videoEle: HTMLVideoElement | null;
+  }) => {
+    if (videoEle === null) return;
+    const id = controller.id;
+    let playbackRate = await this.courseRepo.getVideoSpeed(id);
+    if (playbackRate === null) {
+      playbackRate = videoEle.playbackRate;
+      this.courseRepo.setVideoSpeed(id, playbackRate);
+    }
+    videoEle.playbackRate = playbackRate;
+    this.setSpeedDiv({ controller, playbackRate });
+  };
+
+  setSpeedDiv = ({
+    controller,
+    playbackRate,
+  }: {
+    controller: HTMLDivElement;
+    playbackRate: number;
+  }) => {
+    const speedDiv = controller.querySelector("div");
+    if (!speedDiv) return;
+    speedDiv.innerText = playbackRate.toString() + "X";
+  };
+
   speedHandler = ({
     isUp,
     videoEle,
+    controller,
   }: {
     isUp: boolean;
     videoEle: HTMLVideoElement;
+    controller: HTMLDivElement;
   }) => {
     let playbackRate = videoEle.playbackRate;
     playbackRate = Math.floor(playbackRate / 0.25) * 0.25;
+
     if (isUp) {
-      const result = playbackRate + 0.25 > 5 ? 5 : playbackRate + 0.25;
-      videoEle.playbackRate = result;
-      return {
-        playbackRate: result,
-      };
+      playbackRate = playbackRate + 0.25 > 5 ? 5 : playbackRate + 0.25;
+    } else {
+      playbackRate = playbackRate - 0.25 < 0.5 ? 0.5 : playbackRate - 0.25;
     }
-    const result = playbackRate - 0.25 < 0.5 ? 0.5 : playbackRate - 0.25;
-    videoEle.playbackRate = result;
-    return {
-      playbackRate: result,
-    };
+    videoEle.playbackRate = playbackRate;
+    const id = controller.id;
+    this.courseRepo.setVideoSpeed(id, playbackRate);
+    this.setSpeedDiv({ controller, playbackRate });
   };
 }
