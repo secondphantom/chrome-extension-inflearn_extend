@@ -6,6 +6,12 @@ export class CourseEntry {
   private button = {
     autoSkip: false,
   };
+
+  private id = {
+    autoSkip: "inflearn-extra-course-auto_skip",
+    videoSpeed: "inflearn-extra-course-video_speed",
+  };
+
   constructor(private courseController: CourseController) {}
 
   static getInstance = (courseController: CourseController) => {
@@ -14,12 +20,8 @@ export class CourseEntry {
     return this.instance;
   };
 
-  private createAutoSkipButton = () => {
-    return;
-  };
-
   autoSkip = async (url: string) => {
-    const id = "inflearn-extra-course-auto_skip";
+    const id = this.id.autoSkip;
     let isEnabled = await Utils.getStorage<boolean>(id);
     if (isEnabled === null) {
       Utils.setStorage(id, false);
@@ -60,7 +62,7 @@ export class CourseEntry {
   };
 
   videoSpeed = async () => {
-    const id = "inflearn-extra-course-video_speed";
+    const id = this.id.videoSpeed;
     const ele = document.querySelector(`#${id}`);
     if (ele) {
       setTimeout(() => {

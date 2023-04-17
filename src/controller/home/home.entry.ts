@@ -3,6 +3,10 @@ import { HomeController } from "./home.controller";
 export class HomeEntry {
   static instance: HomeEntry | undefined;
 
+  private id = {
+    searchMyCourse: "inflearn-extra-home-search_my_course",
+  };
+
   constructor(private homeController: HomeController) {}
 
   static getInstance = (homeController: HomeController) => {
@@ -11,7 +15,7 @@ export class HomeEntry {
     return this.instance;
   };
   searchMyCourse = async () => {
-    const id = "inflearn-extra-home-search_my_course";
+    const id = this.id.searchMyCourse;
     const ele = document.querySelector(`#${id}`);
     if (ele) return;
 

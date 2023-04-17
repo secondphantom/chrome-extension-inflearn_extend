@@ -1,17 +1,21 @@
 {
   "name": "Inflearn Extend",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "Inflearn Utility",
   "permissions": ["storage", "tabs"],
   "host_permissions": ["https://www.inflearn.com/*"],
   "background": {
-    "service_worker": "dist/background.js"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["https://www.inflearn.com/*"],
-      "js": ["dist/index.js"]
+      "js": ["index.js"]
     }
   ],
-  "manifest_version": 3
+  "manifest_version": 3,
+  "action": {
+    "default_title": "Inflearn Extend",
+    "default_popup": "popup.html"
+  }
 }
