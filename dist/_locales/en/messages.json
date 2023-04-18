@@ -1,0 +1,23 @@
+{
+  "name": {
+    "message": "Inflearn Extend"
+  },
+  "description": {
+    "message": "It is a chrome extension that can use autoplay in inflearn."
+  },
+  "course": {
+    "message": "Course"
+  },
+  "courseAutoSkip": {
+    "message": "Video Auto Skip"
+  },
+  "courseVideoSpeed": {
+    "message": "Video Speed Up/Down"
+  },
+  "Home": {
+    "message": "Home"
+  },
+  "homeSearchMyCourse": {
+    "message": "Search My Course"
+  }
+}

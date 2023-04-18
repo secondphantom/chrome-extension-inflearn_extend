@@ -21,14 +21,18 @@ class PopUpController {
     const localConfig =
       (await this.configRepo.getConfig()) as any as typeof this.config;
 
-    const list = document.querySelectorAll(
-      "li input"
-    ) as any as HTMLInputElement[];
+    const list = document.querySelectorAll("li");
     for (const ele of list) {
-      const id = ele.id;
+      const spanEle = ele.querySelector("span");
+      if (spanEle) {
+        const key = spanEle.getAttribute("data-i18n");
+        spanEle!.innerText = chrome.i18n.getMessage(key!);
+      }
+      const inputEle = ele.querySelector("input")!;
+      const id = inputEle.id;
       this.config[id] = localConfig === null ? true : localConfig[id];
-      ele.checked = this.config[id];
-      ele.addEventListener("click", () => {
+      inputEle.checked = this.config[id];
+      inputEle.addEventListener("click", () => {
         this.config[id] = !this.config[id];
         this.updateConfig();
       });
@@ -55,6 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     active: true,
   });
   const activeTab = tabs[0];
+  //
 
   const popUpController = PopUpController.getInstance(ConfigRepo.getInstance());
   popUpController.init();

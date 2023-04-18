@@ -1,7 +1,7 @@
 {
-  "name": "Inflearn Extend",
+  "name": "__MSG_name__",
   "version": "1.2.0",
-  "description": "Inflearn Utility",
+  "description": "__MSG_description__",
   "permissions": ["storage", "tabs"],
   "host_permissions": ["https://www.inflearn.com/*"],
   "background": {
@@ -15,7 +15,19 @@
   ],
   "manifest_version": 3,
   "action": {
-    "default_title": "Inflearn Extend",
-    "default_popup": "popup.html"
+    "default_title": "__MSG_name__",
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon32.png",
+    "icons": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "default_locale": "ko",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
