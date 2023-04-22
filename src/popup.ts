@@ -1,5 +1,8 @@
 import { ConfigRepo } from "./infrastructure/db/config.repo";
 
+declare var RUN_ENV: string;
+declare var RESTRICTED_MENU_ID_LIST: string[];
+
 class PopUpController {
   static instance: PopUpController | undefined;
 
@@ -16,6 +19,7 @@ class PopUpController {
   private isInit = false;
 
   init = async () => {
+    this.disableRestrictedMenu();
     if (this.isInit) return;
 
     const localConfig =
@@ -31,6 +35,7 @@ class PopUpController {
       const inputEle = ele.querySelector("input")!;
       const id = inputEle.id;
       this.config[id] = localConfig === null ? true : localConfig[id];
+
       inputEle.checked = this.config[id];
       inputEle.addEventListener("click", () => {
         this.config[id] = !this.config[id];
@@ -40,6 +45,33 @@ class PopUpController {
     this.configRepo.setConfig(this.config);
   };
 
+  private disableRestrictedMenu = () => {
+    const sections = document.querySelectorAll("section");
+    if (!sections) return;
+    sections.forEach((sectionEle, index) => {
+      const liList = sectionEle.querySelectorAll("li");
+
+      let count = 0;
+
+      liList.forEach((liEle, index) => {
+        const input = liEle.querySelector("input");
+        if (!input) return;
+        const id = input.getAttribute("id");
+        if (!id) return;
+        if (RESTRICTED_MENU_ID_LIST.includes(id)) {
+          liEle.style.display = "none";
+          input.checked = false;
+          input.disabled = true;
+          count++;
+        }
+        if (count === index + 1) {
+          sectionEle.style.display = "none";
+        }
+      });
+    });
+    return;
+  };
+
   private updateConfig = () => {
     const list = document.querySelectorAll(
       "li input"
@@ -47,6 +79,9 @@ class PopUpController {
     for (const ele of list) {
       const id = ele.id;
       this.config[id] = ele.checked;
+      if (RESTRICTED_MENU_ID_LIST.includes(id)) {
+        this.config[id] = false;
+      }
       ele.checked = this.config[id];
     }
     this.configRepo.setConfig(this.config);
@@ -59,7 +94,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     active: true,
   });
   const activeTab = tabs[0];
-  //
 
   const popUpController = PopUpController.getInstance(ConfigRepo.getInstance());
   popUpController.init();
