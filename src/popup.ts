@@ -19,9 +19,8 @@ class PopUpController {
   private isInit = false;
 
   init = async () => {
-    this.disableRestrictedMenu();
     if (this.isInit) return;
-
+    this.disableRestrictedMenu();
     const localConfig =
       (await this.configRepo.getConfig()) as any as typeof this.config;
 
@@ -35,6 +34,10 @@ class PopUpController {
       const inputEle = ele.querySelector("input")!;
       const id = inputEle.id;
       this.config[id] = localConfig === null ? true : localConfig[id];
+
+      if (RESTRICTED_MENU_ID_LIST.includes(id)) {
+        this.config[id] = false;
+      }
 
       inputEle.checked = this.config[id];
       inputEle.addEventListener("click", () => {
@@ -60,8 +63,6 @@ class PopUpController {
         if (!id) return;
         if (RESTRICTED_MENU_ID_LIST.includes(id)) {
           liEle.style.display = "none";
-          input.checked = false;
-          input.disabled = true;
           count++;
         }
         if (count === index + 1) {
