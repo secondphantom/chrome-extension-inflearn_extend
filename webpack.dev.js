@@ -8,7 +8,8 @@ module.exports = (env) => {
     dotenv.config({ path: ".env.dev" });
   } else if (env.prod) {
     dotenv.config({ path: ".env.prod" });
-    console.log("prod");
+  } else if (env.unlimited) {
+    dotenv.config({ path: ".env.unlimited" });
   }
 
   const envValues = {
