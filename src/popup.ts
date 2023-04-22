@@ -1,6 +1,5 @@
 import { ConfigRepo } from "./infrastructure/db/config.repo";
 
-declare var RUN_ENV: string;
 declare var RESTRICTED_MENU_ID_LIST: string[];
 
 class PopUpController {

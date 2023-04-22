@@ -6,14 +6,25 @@ import { HomeController } from "./controller/home/home.controller";
 import { HomeEntry } from "./controller/home/home.entry";
 import { ConfigRepo } from "./infrastructure/db/config.repo";
 import { CourseChromeStorageSyncRepo } from "./infrastructure/db/course.repo";
-
+declare var RESTRICTED_MENU_ID_LIST: string[];
 let isInit = false;
 let oldUrl = "";
 chrome.runtime.onMessage.addListener(async (obj, sender, response) => {
   const url = new URL(obj.url);
 
   if (isInit && oldUrl === obj.url) return;
-  const config = await ConfigRepo.getInstance().getConfig();
+  const config = await ConfigRepo.getInstance()
+    .getConfig()
+    .then((config) => {
+      const restrictedConfig: { [key in string]: boolean } = {};
+      RESTRICTED_MENU_ID_LIST.forEach((id) => {
+        restrictedConfig[id] = false;
+      });
+      if (config === null) {
+        return restrictedConfig;
+      }
+      return config;
+    });
   if (document.querySelector("#searchbar-input")) {
     const entry = HomeEntry.getInstance(
       HomeController.getInstance(HomeService.getInstance())
@@ -33,8 +44,8 @@ chrome.runtime.onMessage.addListener(async (obj, sender, response) => {
       )
     );
     if (config === null) {
-      await entry.autoSkip(obj.url);
-      await entry.videoSpeed();
+      // await entry.autoSkip(obj.url);
+      // await entry.videoSpeed();
       return;
     }
     if (config["course-auto_skip"]) {
