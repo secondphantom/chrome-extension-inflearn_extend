@@ -1,0 +1,49 @@
+<link href="popup.css" rel="stylesheet" type="text/css" />
+<script type="module" src="popup.js"></script>
+
+<div class="container">
+  <div class="title">Inflearn Extra Config</div>
+  <section class="section">
+    <div class="section-title">Course</div>
+    <ul>
+      <li>
+        <label>
+          <input
+            type="checkbox"
+            id="course-auto_skip"
+            name="course-auto_skip"
+            checked
+          />
+          <span data-i18n="courseAutoSkip">Video Auto Skip</span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input
+            type="checkbox"
+            id="course-video_speed"
+            name="course-video_speed"
+            checked
+          />
+          <span data-i18n="courseVideoSpeed">Video Speed Up/Down</span>
+        </label>
+      </li>
+    </ul>
+  </section>
+  <section class="section">
+    <div class="section-title">Home</div>
+    <ul>
+      <li>
+        <label>
+          <input
+            type="checkbox"
+            id="home-search_my_course"
+            name="home-search_my_course"
+            checked
+          />
+          <span data-i18n="homeSearchMyCourse">Search My Course</span>
+        </label>
+      </li>
+    </ul>
+  </section>
+</div>

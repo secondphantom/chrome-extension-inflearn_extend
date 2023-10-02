@@ -26,10 +26,13 @@ export class CourseService {
     const playerNodeObserver = new MutationObserver(() => {
       if (!this.isEnabled.autoSkip) return;
       document
-        .querySelector('[data-testid="video-overlay"]')
+        .querySelector(".mantine-Modal-root")
         ?.querySelectorAll("button")
         .forEach((ele) => {
-          if (ele.innerText === "다음 수업보기") {
+          if (
+            ele.innerText === "다음 수업보기" ||
+            ele.innerText === "다음 수업"
+          ) {
             ele.click();
           }
         });
@@ -43,7 +46,8 @@ export class CourseService {
     };
     const videoEle = document.querySelector("video");
     if (!videoEle) return;
-    const targetNode = videoEle.parentElement;
+    const targetNode = document.querySelector(".mantine-Modal-root");
+    if (!targetNode) return;
     this.playerNodeObserver.observe(targetNode!, observerOptions);
   };
 

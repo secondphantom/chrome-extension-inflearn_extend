@@ -1,0 +1,23 @@
+{
+  "name": {
+    "message": "인프런 익스텐드"
+  },
+  "description": {
+    "message": "인프런에서 자동재생 배속등 기능을 포함한 크롬 익스텐션."
+  },
+  "course": {
+    "message": "Course"
+  },
+  "courseAutoSkip": {
+    "message": "영상 자동재생"
+  },
+  "courseVideoSpeed": {
+    "message": "영상 배속"
+  },
+  "Home": {
+    "message": "Home"
+  },
+  "homeSearchMyCourse": {
+    "message": "내강의 검색"
+  }
+}

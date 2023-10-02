@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  padding: 0;
+}
+
+.title {
+  color: black;
+  width: auto;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px;
+  background-color: rgb(0, 230, 134);
+  border-radius: 8px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 3px 0px;
+  border-bottom: 1px solid rgb(0, 157, 92);
+}
+
+ul {
+  padding-top: 4px;
+  font-size: 12px;
+  list-style: none;
+  padding-left: 0px;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+li {
+  padding-top: 4px;
+}
+
+label {
+  display: block;
+  padding-left: 15px;
+  text-indent: -15px;
+}
+
+label > input {
+  accent-color: rgb(0, 196, 113);
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  margin: 0;
+  vertical-align: bottom;
+  position: relative;
+  top: -1px;
+}

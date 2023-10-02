@@ -1,0 +1,1 @@
+(()=>{"use strict";chrome.tabs.onUpdated.addListener(((...e)=>{const[s,t,r]=e;"complete"===t.status&&r.url&&r.url.includes("inflearn.com")&&chrome.tabs.sendMessage(s,{url:r.url})}))})();
