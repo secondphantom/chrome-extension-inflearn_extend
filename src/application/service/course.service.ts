@@ -114,8 +114,26 @@ export class CourseService {
       playbackRate = videoEle.playbackRate;
       this.courseRepo.setVideoSpeed(id, playbackRate);
     }
-    videoEle.playbackRate = playbackRate;
-    this.setSpeedDiv({ controller, playbackRate });
+
+    let count = 0;
+    const abortLimit = 10;
+    while (true) {
+      if (count > abortLimit) break;
+      count++;
+      if (videoEle.buffered.length === 0) {
+        await new Promise((res) => {
+          setTimeout(() => res(null), 1000);
+        });
+        continue;
+      }
+      await new Promise((res) => {
+        setTimeout(() => res(null), 1000);
+      });
+
+      videoEle.playbackRate = playbackRate;
+      this.setSpeedDiv({ controller, playbackRate });
+      break;
+    }
   };
 
   setSpeedDiv = ({
